@@ -43,6 +43,8 @@ public class App {
 				System.out.println("key: " + singlevalue.getKey() + " - value: " + singlevalue.getValue());
 			}
 			
+			cache.terminate();
+			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

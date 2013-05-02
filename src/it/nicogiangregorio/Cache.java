@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class Cache<S, T> implements Computable<S, T> {
 	private final ConcurrentMap<S, Future<T>> cache = new ConcurrentHashMap<S, Future<T>>();
 	private final Computable<S, T> c;
-
+	private final ScheduledExecutorService timeoutHandler = Executors.newSingleThreadScheduledExecutor();
 	/**
 	 * 
 	 * @param c : computable action
@@ -24,8 +24,6 @@ public class Cache<S, T> implements Computable<S, T> {
 	 */
 	public Cache(Computable<S, T> c, long timeout, TimeUnit timeUnit) {
 		this.c = c;
-		ScheduledExecutorService timeoutHandler = Executors.newSingleThreadScheduledExecutor();
-		
 		if (timeout == 0) {
 			timeUnit = TimeUnit.DAYS;
 			timeout = 365000; // I don't think this will be useful anymore :)
@@ -97,6 +95,10 @@ public class Cache<S, T> implements Computable<S, T> {
 			}
 		}
 		return extCache;
+	}
+	
+	public void terminate() {
+		timeoutHandler.shutdownNow();
 	}
 
 	/**
